@@ -1,4 +1,3 @@
--- Create the stored procedure
 DELIMITER //
 CREATE PROCEDURE ComputeAverageWeightedScoreForUsers()
 BEGIN
@@ -28,10 +27,10 @@ BEGIN
         SET total_weight = 0;
 
         -- Calculate the total weighted score and total weight for the current user
-        SELECT SUM(corrections.score * projects.weight), SUM(projects.weight)
+        SELECT SUM(corrections.score * projects.weight), IFNULL(SUM(projects.weight), 0)
         INTO total_score, total_weight
         FROM corrections
-        JOIN projects ON corrections.project_id = projects.id
+        LEFT JOIN projects ON corrections.project_id = projects.id
         WHERE corrections.user_id = user_id;
 
         -- Calculate the average weighted score for the current user
@@ -45,14 +44,6 @@ BEGIN
         UPDATE users SET average_score = average_weighted_score WHERE id = user_id;
     END LOOP;
     CLOSE users_cursor;
-
-    -- Display the desired output for the corrections table
-    SELECT user_id, project_id, score FROM corrections;
-    SELECT '--', '--', '--';
-
-    -- Display the desired output for the users table
-    SELECT id, name, ROUND(average_score, 4) AS average_score FROM users;
-
 END;
 //
 DELIMITER ;
