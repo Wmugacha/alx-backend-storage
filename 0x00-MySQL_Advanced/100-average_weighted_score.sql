@@ -1,5 +1,5 @@
 -- Create the stored procedure
-DELIMITER //
+DELIMITER $$
 CREATE PROCEDURE ComputeAverageWeightedScoreForUser(IN user_id INT)
 BEGIN
     DECLARE total_score DECIMAL(10, 2);
@@ -27,5 +27,5 @@ BEGIN
     UPDATE users SET average_score = average_weighted_score WHERE id = user_id;
 
 END;
-//
+$$
 DELIMITER ;
