@@ -92,12 +92,26 @@ class Cache:
             value = 0
         return value
 
+    
+def replay(method: Callable) -> None:
+    """
+    Replays the history of a function
+    Args:
+        method: The function to be decorated
+    Returns:
+        None
+    """
+    name = method.__qualname__
+    cache = redis.Redis()
+    calls = cache.get(name).decode("utf-8")
+    print(f"{name} was called {calls} times:")
+    inputs = cache.lrange(name + ":inputs", 0, -1)
+    outputs = cache.lrange(name + ":outputs", 0, -1)
+    for i, o in zip(inputs, outputs):
+        print(f"{name}(*{i.decode('utf-8')}) -> {o.decode('utf-8')}")
 
 
-
-
-
-
+#Test case for number 1
 cache = Cache()
 
 TEST_CASES = {
@@ -109,3 +123,9 @@ TEST_CASES = {
 for value, fn in TEST_CASES.items():
     key = cache.store(value)
     assert cache.get(key, fn=fn) == value
+
+#Test cases for Replay function
+cache.store("foo")
+cache.store("bar")
+cache.store(42)
+replay(cache.store)
