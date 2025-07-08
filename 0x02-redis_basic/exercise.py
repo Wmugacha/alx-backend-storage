@@ -3,11 +3,26 @@
 from typing import Callable, Optional, Union
 from uuid import uuid4
 import redis
-from functools import wraps
+import functools
 
 '''
     Writing strings to Redis.
 '''
+
+def count_calls(method: Callable) -> Callable:
+    '''
+        Counts the number of times a methods of the Cache class are called.
+    '''
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        '''
+            Wrapper function.
+        '''
+        key = method.__qualname__
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -21,7 +36,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
-    #@count_calls
+    @count_calls
     #@call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         '''
