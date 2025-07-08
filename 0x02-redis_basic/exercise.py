@@ -30,3 +30,49 @@ class Cache:
         randomKey = str(uuid4())
         self._redis.set(randomKey, data)
         return randomKey
+
+    def get(self, key: str,
+            fn: Optional[Callable] = None) -> Union[str, bytes, int, float]:
+        '''
+            Get data from the cache.
+        '''
+        value = self._redis.get(key)
+        if fn:
+            value = fn(value)
+        return value
+
+    def get_str(self, key: str) -> str:
+        '''
+            Get a string from the cache.
+        '''
+        value = self._redis.get(key)
+        return value.decode('utf-8')
+
+    def get_int(self, key: str) -> int:
+        '''
+            Get an int from the cache.
+        '''
+        value = self._redis.get(key)
+        try:
+            value = int(value.decode('utf-8'))
+        except Exception:
+            value = 0
+        return value
+
+
+
+
+
+
+
+cache = Cache()
+
+TEST_CASES = {
+    b"foo": None,
+    123: int,
+    "bar": lambda d: d.decode("utf-8")
+}
+
+for value, fn in TEST_CASES.items():
+    key = cache.store(value)
+    assert cache.get(key, fn=fn) == value
