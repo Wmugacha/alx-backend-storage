@@ -8,6 +8,7 @@ from typing import Callable
 
 _redis = redis.Redis()
 
+
 def cache_and_count(func: Callable) -> Callable:
     """
     Decorator: Caches function output for 10s and tracks URL access count.
@@ -35,6 +36,7 @@ def cache_and_count(func: Callable) -> Callable:
         return result
     return wrapper
 
+
 @cache_and_count
 def get_page(url: str) -> str:
     """
@@ -43,8 +45,9 @@ def get_page(url: str) -> str:
     response = requests.get(url)
     return response.text
 
+
 if __name__ == "__main__":
-    test_url = "http://slowwly.robertomurray.co.uk/delay/2000/url/http://www.google.com"
+    test_url = "http://slowwly.robertomurray.co.uk/"
 
     print(f"Fetching: {test_url}")
     page_content = get_page(test_url)

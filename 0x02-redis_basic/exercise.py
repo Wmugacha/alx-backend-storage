@@ -9,6 +9,7 @@ import functools
     Writing strings to Redis.
 '''
 
+
 def call_history(method: Callable) -> Callable:
     """ Decorator to store the history of inputs and
     outputs for a particular function.
@@ -26,6 +27,7 @@ def call_history(method: Callable) -> Callable:
         return data
 
     return wrapper
+
 
 def count_calls(method: Callable) -> Callable:
     '''
@@ -92,7 +94,7 @@ class Cache:
             value = 0
         return value
 
-    
+
 def replay(method: Callable) -> None:
     """
     Replays the history of a function
@@ -111,7 +113,7 @@ def replay(method: Callable) -> None:
         print(f"{name}(*{i.decode('utf-8')}) -> {o.decode('utf-8')}")
 
 
-#Test case for number 1
+# Test case for number 1
 cache = Cache()
 
 TEST_CASES = {
@@ -124,7 +126,7 @@ for value, fn in TEST_CASES.items():
     key = cache.store(value)
     assert cache.get(key, fn=fn) == value
 
-#Test cases for Replay function
+# Test cases for Replay function
 cache.store("foo")
 cache.store("bar")
 cache.store(42)
