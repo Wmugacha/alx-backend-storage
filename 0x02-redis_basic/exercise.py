@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
+"""This module implements a Redis-based cache system with decorators to track
+function call count and history, as well as replay functionality."""
+
 from typing import Callable, Optional, Union
 from uuid import uuid4
 import redis
 import functools
-
-'''
-    Writing strings to Redis.
-'''
 
 
 def call_history(method: Callable) -> Callable:
@@ -37,7 +36,7 @@ def count_calls(method: Callable) -> Callable:
     @functools.wraps(method)
     def wrapper(self, *args, **kwargs):
         '''
-            Wrapper function.
+            Wrapper function to increment the key.
         '''
         key = method.__qualname__
         self._redis.incr(key)
@@ -46,9 +45,8 @@ def count_calls(method: Callable) -> Callable:
 
 
 class Cache:
-    '''
-        Cache class.
-    '''
+    """This class provides a simple Redis-backed cache with methods for storing
+    and retrieving values, along with decorators to track usage statistics."""
     def __init__(self):
         '''
             Initialize the Redis Instance.
